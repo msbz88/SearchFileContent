@@ -68,31 +68,29 @@ namespace SearchFileContent {
                 fileSearchTerms = Console.ReadLine();
                 if (VerifyFile(fileSearchTerms)) { break; }
             }
-            List<string> searchTerms = ReadFile(fileSearchTerms);          
+            List<string> searchTerms = ReadFile(fileSearchTerms);
             IEnumerable<FileInfo> fileList = dir.GetFiles("*.*", SearchOption.AllDirectories);
             if (fileList.Count() == 0) {
                 Console.WriteLine("The search directory is empty, nothing found");
-            }else {
+            } else {
                 Console.WriteLine("-----------------------------------------------------------");
                 Console.WriteLine("Found in:");
                 int count = 0;
-                foreach (var item in searchTerms) {
-                    var queryMatchingFiles =
-                    from file in fileList
-                    where file.Name != Path.GetFileName(fileSearchTerms)
-                    let fileText = GetFileText(file.FullName)
-                    where fileText.Contains(item)
-                    select file.FullName;
+                var queryMatchingFiles =
+                from file in fileList
+                where file.Name != Path.GetFileName(fileSearchTerms)
+                let fileText = GetFileText(file.FullName)
+                where searchTerms.Any(s => fileText.Contains(s))
+                select file.FullName;
 
-                    foreach (string filename in queryMatchingFiles) {
-                        Directory.CreateDirectory(searchFolder + @"\Selected");
-                        string newFileLoc = searchFolder + @"\Selected\" + Path.GetFileName(filename);
-                        if (!File.Exists(newFileLoc)) {
-                            File.Copy(filename, newFileLoc);
-                            count++;
-                        }
-                        Console.WriteLine(filename);
+                foreach (string filename in queryMatchingFiles) {
+                    Directory.CreateDirectory(searchFolder + @"\Selected");
+                    string newFileLoc = searchFolder + @"\Selected\" + Path.GetFileName(filename);
+                    if (!File.Exists(newFileLoc)) {
+                        File.Copy(filename, newFileLoc);
+                        count++;
                     }
+                    Console.WriteLine(filename);
                 }
                 Console.WriteLine("-----------------------------------------------------------");
                 Console.WriteLine("Result: " + count + " unique file(s) found");
