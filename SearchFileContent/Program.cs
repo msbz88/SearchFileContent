@@ -77,11 +77,11 @@ namespace SearchFileContent {
                 Console.WriteLine("Found in:");
                 int count = 0;
                 var queryMatchingFiles =
-                from file in fileList
-                where file.Name != Path.GetFileName(fileSearchTerms)
-                let fileText = GetFileText(file.FullName)
-                where searchTerms.Any(s => fileText.Contains(s))
-                select file.FullName;
+                    from file in fileList
+                    where file.Name != Path.GetFileName(fileSearchTerms)
+                    let fileText = GetFileText(file.FullName)
+                    where searchTerms.Any(s => fileText.Contains(s))
+                    select file.FullName;
 
                 foreach (string filename in queryMatchingFiles) {
                     Directory.CreateDirectory(searchFolder + @"\Selected");
